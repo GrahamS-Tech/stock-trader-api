@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="StockTraderAPI"
+                   namespace="StockTraderAPI.Adapters">
+  <class name="profile" table="profile" lazy="true">
+    <id name="Id" column="id" unsaved-value="0" generator="native">
+    </id>
+    <property name="FirstName" column="first_name"/>
+    <property name="LastName" column="last_name"/>
+    <property name="EmailAddress" column="email_address"/>
+    <property name="Password" column="password"/>
+    <property name="SignupDate" column="signup_date"/>
+    <property name="Address1" column="address_1"/>
+    <property name="Address2" column="address_2"/>
+    <property name="City" column="city"/>
+    <property name="State" column="state"/>
+    <property name="PostalCode" column="postal_code"/>
+    <bag name="BankingDetails" cascade="all-delete-orphan" lazy="true">
+      <key column="profile_id"/>
+      <one-to-many class="banking_detail"/>
+    </bag>
+    <bag name="Holdings" cascade="all-delete-orphan" lazy="true">
+      <key column="profile_id"/>
+      <one-to-many class="holding"/>
+    </bag>
+    <bag name="Transactions" cascade="all-delete-orphan" lazy="true">
+      <key column="profile_id"/>
+      <one-to-many class="transaction"/>
+    </bag>
+    <bag name="WatchLists" cascade="all-delete-orphan" lazy="true">
+      <key column="profile_id"/>
+      <one-to-many class="watch_list"/>
+    </bag>
+  </class>
+</hibernate-mapping>

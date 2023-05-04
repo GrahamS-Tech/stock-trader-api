@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>StockTraderAPI</RootNamespace>
+    <UserSecretsId>e51956a4-fd6b-47dd-b36c-6a8a4a2bfecb</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Adapters\Mappings\banking_detail.hbm.xml" />
+    <None Remove="Adapters\Mappings\holding.hbm.xml" />
+    <None Remove="Adapters\Mappings\profile.hbm.xml" />
+    <None Remove="Adapters\Mappings\transaction.hbm.xml" />
+    <None Remove="Adapters\Mappings\watch_list.hbm.xml" />
+    <None Remove="App.config~RF15b24f80.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Adapters\Mappings\banking_detail.hbm.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Adapters\Mappings\holding.hbm.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Adapters\Mappings\profile.hbm.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Adapters\Mappings\transaction.hbm.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Adapters\Mappings\watch_list.hbm.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+    <PackageReference Include="NHibernate" Version="5.4.2" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+</Project>
