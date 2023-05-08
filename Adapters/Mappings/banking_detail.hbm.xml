@@ -3,11 +3,9 @@
                    assembly="StockTraderAPI"
                    namespace="StockTraderAPI.Adapters">
   <class name="banking_detail" table="banking_detail" lazy="true">
-    <id name="Id" column="id" unsaved-value="0" generator="native">
+    <id name="Id" column="id" unsaved-value="0" generator="identity">
     </id>
-    <many-to-one name="ProfileId" class="profile">
-      <column name="profile_id" not-null="true"/>
-    </many-to-one>
+    <many-to-one name="ProfileId" class="profile" column="profile_id" not-null="true" cascade="all"/>
     <property name="AccountType" column="account_type"/>
     <property name="AccountNumber" column="account_number"/>
     <property name="RoutingNumber" column="routing_number"/>

@@ -2,13 +2,11 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
                    assembly="StockTraderAPI"
                    namespace="StockTraderAPI.Adapters">
-  <class name="transaction" table="transaction" lazy="true">
+  <class name="login_log" table="public.login_log" lazy="true">
     <id name="Id" column="id" unsaved-value="0" generator="identity">
     </id>
     <many-to-one name="ProfileId" class="profile" column="profile_id" not-null="true" cascade="all"/>
-    <property name="Ticker" column="ticker"/>
-    <property name="Shares" column="shares"/>
-    <property name="TransactionType" column="transaction_type"/>
-    <property name="TransactionDate" column="transaction_date"/>
+    <property name="TimeStamp" column="time_stamp"/>
+    <property name="Successful" column="successful"/>
   </class>
 </hibernate-mapping>

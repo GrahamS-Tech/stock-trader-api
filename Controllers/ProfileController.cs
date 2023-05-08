@@ -1,75 +1,53 @@
-﻿using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using StockTraderAPI.Adapters;
-using NHibernate.Cfg;
-using NHibernate;
+using ISession = NHibernate.ISession;
 
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+namespace StockTraderAPI.Controllers;
 
-namespace StockTraderAPI.Controllers
-{
 
 [Route("api/[controller]")]
-    [ApiController]
+[ApiController]
 
-    public class ProfileController : ControllerBase
+public class ProfileController
+{
+    ISession session;
+
+    public ProfileController(ISession session)
+    {
+        this.session = session;
+    }
+
+    [HttpGet("{email}")]
+    public string Get(string email)
+    {
+        var profileData = session.Query<profile>().Where(e => e.EmailAddress == email).FirstOrDefault();
+
+        if (profileData == null)
+        {
+            return "User account not found";
+        }
+
+        return $" {profileData.ProfileId}, {profileData.EmailAddress}, {profileData.Password}, {profileData.ProfileIsActive} ";
+    }
+
+    [HttpPut("{profile_id}")]
+    public void Put(int profile_id, string newFirstName, string newLastName, string newEmailAddress, string newAddress1, string newAddress2, string newCity, string newState, string newPostalCode)
     {
 
-        private readonly IConfiguration _configuration;
+        var profileUpdate = new profile();
+        profileUpdate = session.Query<profile>().Where(p => p.ProfileId == profile_id).First();
+        profileUpdate.FirstName = newFirstName;
+        profileUpdate.LastName = newLastName;
+        profileUpdate.EmailAddress = newEmailAddress;
+        profileUpdate.Address1 = newAddress1;
+        profileUpdate.Address2 = newAddress2;
+        profileUpdate.City = newCity;
+        profileUpdate.State = newState;
+        profileUpdate.PostalCode = newPostalCode;
+        session.SaveOrUpdate(profileUpdate);
+        session.Flush();
 
-        public ProfileController(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
-        // GET: api/Profile
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-
-            var connectionString = _configuration.GetConnectionString("azurePostgres");
-            Configuration cfg = new Configuration();
-            cfg.Configure();
-            cfg.SetProperty(NHibernate.Cfg.Environment.ConnectionString, connectionString);
-            var sessionFactory = cfg.BuildSessionFactory();
-            var session = sessionFactory.OpenSession();
-
-            var profileData = session.Query<profile>().ToList();
-
-            string firstNames = "";
-
-            foreach (var profiles in profileData)
-            {
-                firstNames += profiles.FirstName;
-            };
-
-            return new string[] { firstNames };
-        }
-
-        // GET api/Profile/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/Profile
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/Profile/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/Profile/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
     }
+
 }

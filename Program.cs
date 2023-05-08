@@ -1,16 +1,25 @@
-//using System.IO;
-//using Newtonsoft.Json.Linq;
-//using System.Xml.Linq;
-//using System.Xml.XPath;
+using NHibernate;
+using NHibernate.Context;
+using ISession = NHibernate.ISession;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration["ConnectionStrings:postgresConnectionString"];
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+var connString = builder.Configuration["ConnectionStrings:azurePostgres"];
+builder.Services.AddSingleton<ISessionFactory>((provider) => { 
+var cfg = new NHibernate.Cfg.Configuration();
+    cfg.Configure();
+    cfg.SetProperty(NHibernate.Cfg.Environment.ConnectionString, connString);
+    cfg.CurrentSessionContext<WebSessionContext>();
+    return cfg.BuildSessionFactory();
+});
+builder.Services.AddScoped<ISession>((provider) => {
+    var session = provider.GetService<ISessionFactory>();
+    return session.OpenSession();
+});
+
 
 var app = builder.Build();
 

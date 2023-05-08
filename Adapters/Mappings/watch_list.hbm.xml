@@ -3,12 +3,11 @@
                    assembly="StockTraderAPI"
                    namespace="StockTraderAPI.Adapters">
   <class name="watch_list" table="watch_list" lazy="true">
-    <id name="Id" column="id" unsaved-value="0" generator="native">
+    <id name="Id" column="id" unsaved-value="0" generator="identity">
     </id>
-    <many-to-one name="ProfileId" class="profile">
-      <column name="profile_id" not-null="true"/>
-    </many-to-one>
+    <many-to-one name="ProfileId" class="profile" column="profile_id" not-null="true" cascade="all"/>
     <property name="Ticker" column="ticker"/>
     <property name="DateAdded" column="date_added"/>
+    <property name="IsActive" column="is_active"/>
   </class>
 </hibernate-mapping>
