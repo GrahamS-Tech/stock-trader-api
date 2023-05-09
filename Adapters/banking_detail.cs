@@ -8,6 +8,7 @@
         public virtual string? AccountNumber { get; set;}
         public virtual string? RoutingNumber { get; set;}
         public virtual DateTime DateAdded { get; set;}
+        public virtual bool IsActive { get; set; }
 
     }
 }

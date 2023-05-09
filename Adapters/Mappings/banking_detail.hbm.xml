@@ -10,5 +10,6 @@
     <property name="AccountNumber" column="account_number"/>
     <property name="RoutingNumber" column="routing_number"/>
     <property name="DateAdded" column="date_added"/>
+    <property name="IsActive" column="is_active"/>
   </class>
 </hibernate-mapping>

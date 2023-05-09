@@ -5,7 +5,7 @@
         public virtual int Id { get; set; }
         public virtual profile? ProfileId { get; set; }
         public virtual string? Ticker { get; set; }
-        public virtual int Shares { get; set; }
+        public virtual double Shares { get; set; }
         public virtual string? TransactionType { get; set; }
         public virtual DateTime TransactionDate { get; set; }
     }

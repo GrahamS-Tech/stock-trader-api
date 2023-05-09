@@ -1,7 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using NHibernate;
-using NHibernate.Criterion;
-using NHibernate.Multi;
 using StockTraderAPI.Adapters;
 using ISession = NHibernate.ISession;
 
@@ -19,7 +16,7 @@ public class LoginController
         this.session = session;
     }
 
-    [HttpGet]
+    [HttpGet("{enteredEmail}, {enteredPassword}")]
     public string Get(string enteredEmail, string enteredPassword)
     {
         
