@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using StockTraderAPI.Adapters;
+using System.Security.Claims;
 using ISession = NHibernate.ISession;
 
 
@@ -9,7 +11,7 @@ namespace StockTraderAPI.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 
-public class ProfileController
+public class ProfileController : ControllerBase
 {
     ISession session;
 
@@ -18,17 +20,20 @@ public class ProfileController
         this.session = session;
     }
 
-    [HttpGet("{email}")]
-    public string Get(string email)
+    [HttpGet("ProfileDetails")]
+    [Authorize]
+    public IActionResult Get()
     {
-        var profileData = session.Query<profile>().Where(e => e.EmailAddress == email).FirstOrDefault();
+        var currentUser = GetCurrentUser();
 
-        if (profileData == null)
+        if (currentUser.Id == null)
         {
-            return "User account not found";
+            return NotFound("User account not found");
         }
 
-        return $" {profileData.ProfileId}, {profileData.EmailAddress}, {profileData.Password}, {profileData.ProfileIsActive} ";
+        var userId = int.Parse(currentUser.Id);
+        var profileData = session.Query<profile>().Where(e => e.ProfileId == userId).FirstOrDefault();
+        return Ok($" {profileData.ProfileId}, {profileData.EmailAddress}, {profileData.Password}, {profileData.ProfileIsActive} ");
     }
 
     [HttpPut("{profile_id}")]
@@ -48,6 +53,23 @@ public class ProfileController
         session.SaveOrUpdate(profileUpdate);
         session.Flush();
 
+    }
+
+    private login GetCurrentUser()
+    {
+        var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+        if (identity != null)
+        { 
+            var userClaims = identity.Claims;
+
+            return new login
+            {
+                Id = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.NameIdentifier)?.Value,
+                EmailAddress = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Email)?.Value
+            };
+        }
+        return null;
     }
 
 }

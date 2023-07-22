@@ -1,12 +1,37 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using NHibernate;
 using NHibernate.Context;
+using StockTraderAPI.Controllers;
+using System.Text;
 using ISession = NHibernate.ISession;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(o => {
+    o.AddPolicy(name: "_allowedOrigins", policy => {
+        policy.WithOrigins("https://localhost:44450")
+        .AllowAnyHeader();
+    });
+});
 builder.Services.AddControllers();
+builder.Services.AddMvc();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.Configure <JwtInfo>(builder.Configuration.GetSection("Jwt"));
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+    };
+});
 var connString = builder.Configuration["ConnectionStrings:azurePostgres"];
 builder.Services.AddSingleton<ISessionFactory>((provider) => { 
 var cfg = new NHibernate.Cfg.Configuration();
@@ -20,10 +45,10 @@ builder.Services.AddScoped<ISession>((provider) => {
     return session.OpenSession();
 });
 
-
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -31,9 +56,14 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
+app.UseRouting();
 app.UseAuthorization();
-
+app.UseCors("_allowedOrigins");
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 app.MapControllers();
 
 app.Run();
