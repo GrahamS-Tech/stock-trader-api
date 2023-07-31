@@ -16,6 +16,7 @@ public class profile
     public virtual bool ProfileIsActive { get; set; }
     public virtual bool ForcePasswordReset { get; set; }
     public virtual string? Salt { get; set; }
+    public virtual bool ProfileComplete { get; set; }
     public virtual DateTime LastLoginTimestamp { get; set; }
     public virtual IList<banking_detail>? BankingDetails { get; set; }
     public virtual IList<holding>? Holdings { get; set; }

@@ -108,7 +108,7 @@ public class LoginController : ControllerBase
         {
             userProfile.Id = profileData.ProfileId.ToString();
             var token = GenerateToken(userProfile);
-            returnMessage = $"{ userProfile.Id }:{ token}";
+            returnMessage = token;
             loginSuccessful = true;
         }
 

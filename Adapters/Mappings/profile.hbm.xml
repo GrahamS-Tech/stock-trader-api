@@ -19,6 +19,7 @@
     <property name="ForcePasswordReset" column="force_password_reset"/>
     <property name="LastLoginTimestamp" column="last_login_timestamp"/>
     <property name="Salt" column="salt"/>
+	  <property name="ProfileComplete" column="profile_complete"/>
     <bag name="BankingDetails" cascade="all-delete-orphan" lazy="true">
       <key column="profile_id"/>
       <one-to-many class="banking_detail"/>

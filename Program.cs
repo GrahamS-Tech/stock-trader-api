@@ -11,7 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(o => {
     o.AddPolicy(name: "_allowedOrigins", policy => {
         policy.WithOrigins("https://localhost:44450")
-        .AllowAnyHeader();
+        .AllowAnyHeader()
+        .AllowAnyMethod();
     });
 });
 builder.Services.AddControllers();
@@ -56,10 +57,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseAuthentication();
 app.UseRouting();
-app.UseAuthorization();
 app.UseCors("_allowedOrigins");
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
