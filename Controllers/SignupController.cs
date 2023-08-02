@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StockTraderAPI.Adapters;
+using System.Text.Json;
 using ISession = NHibernate.ISession;
 
 namespace StockTraderAPI.Controllers;
@@ -20,12 +21,17 @@ public SignupController(ISession session)
     [HttpPost]
     public IActionResult Signup([FromBody] signup userProfile)
     {
+        var response = new api_response<object> { };
         var profileData = session.Query<profile>()
-            .Where(e => e.EmailAddress == userProfile.EmailAddress.ToLower());
+        .Where(e => e.EmailAddress == userProfile.EmailAddress.ToLower());
 
         if (profileData.Count() != 0)
         {
-            return NotFound("User account already exists");
+            response.Status = "error";
+            response.Message = "User account already exists";
+            response.Data = "";
+            var jsonResponse = JsonSerializer.Serialize(response);
+            return BadRequest(jsonResponse);
         }
 
         else 
@@ -41,8 +47,14 @@ public SignupController(ISession session)
             newProfile.Salt = salt;
             newProfile.ProfileIsActive = true;
             newProfile.ForcePasswordReset = false;
+            newProfile.SignupDate = DateTime.UtcNow;
             session.Save(newProfile);
-            return Ok("Account created. Return to Log in tab to log in");
+
+            response.Status = "success";
+            response.Message = "Account created";
+            response.Data = "";
+            var jsonResponse = JsonSerializer.Serialize(response);
+            return Ok(jsonResponse);
         }
     }
     }

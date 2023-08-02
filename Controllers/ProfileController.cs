@@ -2,11 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using StockTraderAPI.Adapters;
 using System.Security.Claims;
+using System.Text.Json;
 using ISession = NHibernate.ISession;
 
-
 namespace StockTraderAPI.Controllers;
-
 
 [Route("api/[controller]")]
 [ApiController]
@@ -24,11 +23,16 @@ public class ProfileController : ControllerBase
     [Authorize]
     public IActionResult GetProfileDetails()
     {
+        var response = new api_response<object> { };
+        var jsonResponse = "";
         var currentUser = ValidateUser();
 
-        if (currentUser.Id == null)
+        if (currentUser.Id is null)
         {
-            return NotFound("User account not found");
+            response.Status = "error";
+            response.Message = "User account not found";
+            jsonResponse = JsonSerializer.Serialize(response);
+            return NotFound(jsonResponse);
         }
 
         var userId = int.Parse(currentUser.Id);
@@ -45,18 +49,28 @@ public class ProfileController : ControllerBase
         currentProfile.PostalCode = profileData.PostalCode;
         currentProfile.ProfileIsActive = profileData.ProfileIsActive;
         currentProfile.ProfileComplete = profileData.ProfileComplete;
-        return Ok(currentProfile);
+
+        response.Status = "success";
+        response.Message = "Profile data retrieved successfully";
+        response.Data = currentProfile;
+        jsonResponse = JsonSerializer.Serialize(response);
+        return Ok(jsonResponse);
     }
 
     [HttpPut("ProfileUpdate")]
     [Authorize]
     public IActionResult ProfileUpdate([FromBody] profile userProfile)
     {
+        var response = new api_response<object> { };
+        var jsonResponse = "";
         var currentUser = ValidateUser();
 
-        if (currentUser.Id == null)
+        if (currentUser.Id is null)
         {
-            return NotFound("User account not found");
+            response.Status = "error";
+            response.Message = "User account not found";
+            jsonResponse = JsonSerializer.Serialize(response);
+            return NotFound(jsonResponse);
         }
         Console.WriteLine(userProfile);
         var profileUpdate = new profile();
@@ -74,14 +88,17 @@ public class ProfileController : ControllerBase
         session.SaveOrUpdate(profileUpdate);
         session.Flush();
 
-        return Ok();
+        response.Status = "success";
+        response.Message = "Profile data updated successfully";
+        jsonResponse = JsonSerializer.Serialize(response);
+        return Ok(jsonResponse);
     }
 
     private login ValidateUser()
     {
         var identity = HttpContext.User.Identity as ClaimsIdentity;
 
-        if (identity != null)
+        if (identity is not null)
         { 
             var userClaims = identity.Claims;
 

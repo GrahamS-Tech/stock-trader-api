@@ -6,6 +6,7 @@ using StockTraderAPI.Adapters;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 using ISession = NHibernate.ISession;
 
 namespace StockTraderAPI.Controllers;
@@ -30,42 +31,34 @@ public class LoginController : ControllerBase
     }
 
     [AllowAnonymous]
-    [HttpGet("{enteredEmail}")]
-
-    public string Get(string enteredEmail) 
-    {
-        var profileData = session.Query<profile>()
-            .Where(e => e.EmailAddress == enteredEmail.ToLower())
-            .FirstOrDefault();
-        var password = profileData.Password;
-        var salt = profileData.Salt;
-        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password, salt);
-
-        return ($"Password:{password}, Salt:{salt}, Hashed Password:{hashedPassword}, JwtKey:{Key}");
-
-    }
-
-    [AllowAnonymous]
     [HttpPost]
     public IActionResult Login([FromBody] login userProfile)
     {
-
+        var response = new api_response<object> { };
         var profileData = session.Query<profile>()
             .Where(e => e.EmailAddress == userProfile.EmailAddress.ToLower())
             .FirstOrDefault();
         int failedLogins = 0;
-        var returnMessage = "";
         bool loginSuccessful = false;
         var hashedPassword = "";
+        var jsonResponse = "";
 
 
         if (profileData is null)
         {
-            return Unauthorized("User account not found");
+            response.Status = "error";
+            response.Message = "User account not found";
+            response.Data = "";
+            jsonResponse = JsonSerializer.Serialize(response);
+            return Unauthorized(jsonResponse);
         }
-        else if (userProfile.Password == null || userProfile.Password == "")
+        else if (userProfile.Password is null || userProfile.Password == "")
         {
-            return Ok(profileData.Salt);
+            response.Status = "success";
+            response.Message = "User salt found";
+            response.Data = profileData.Salt;
+            jsonResponse = JsonSerializer.Serialize(response);
+            return Ok(jsonResponse);
         }
         else
         {
@@ -85,42 +78,48 @@ public class LoginController : ControllerBase
 
         if (failedLogins > 4)
         {
-            returnMessage = "Too many failed login attempts. Reset password to continue";
+            response.Status="error";
+            response.Message = "Too many failed login attempts. Reset password to continue";
             loginSuccessful = false;
             profileData.ForcePasswordReset = true;
         }
         else if (profileData.ProfileIsActive != true)
         {
-            returnMessage = "This account is no longer active";
+            response.Status = "error";
+            response.Message = "This account is no longer active";
             loginSuccessful = false;
         }
         else if (profileData.ForcePasswordReset == true)
         {
-            returnMessage = "You must reset your password before logging in";
+            response.Status = "error";
+            response.Message = "You must reset your password before logging in";
             loginSuccessful = false;
         }
         else if (userProfile.Password != profileData.Password)
         {
-            returnMessage = "Incorrect password";
+            response.Status = "error";
+            response.Message = "Incorrect password";
             loginSuccessful = false;
         }
         else
         {
             userProfile.Id = profileData.ProfileId.ToString();
             var token = GenerateToken(userProfile);
-            returnMessage = token;
+            response.Status = "success";
+            response.Data = token;
             loginSuccessful = true;
         }
 
         var newLoginLog = new login_log();
         newLoginLog.ProfileId = profileData;
-        newLoginLog.TimeStamp = DateTime.Now;
+        newLoginLog.TimeStamp = DateTime.UtcNow;
         newLoginLog.Successful = loginSuccessful;
         profileData.LoginLog.Add(newLoginLog);
         session.SaveOrUpdate(profileData);
         session.Flush();
 
-        return loginSuccessful ? Ok(returnMessage) : Unauthorized(returnMessage);
+        jsonResponse = JsonSerializer.Serialize(response);
+        return loginSuccessful ? Ok(jsonResponse) : Unauthorized(jsonResponse);
     }
 
     private string GenerateToken(login userProfile)

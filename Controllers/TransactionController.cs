@@ -39,7 +39,7 @@ public class TransactionController
                     Ticker = transactionEntry.Ticker,
                     Shares = transactionEntry.Shares,
                     TransactionType = transactionEntry.TransactionType,
-                    TransactionDate = transactionEntry.TransactionDate
+                    TransactionDate = DateTime.UtcNow
                 };
 
                 requestedTransactionEntries.Add(transaction);
@@ -60,7 +60,7 @@ public class TransactionController
                     Ticker = transactionEntry.Ticker,
                     Shares = transactionEntry.Shares,
                     TransactionType = transactionEntry.TransactionType,
-                    TransactionDate = transactionEntry.TransactionDate
+                    TransactionDate = DateTime.UtcNow
                 };
                 requestedTransactionEntries.Add(transaction);
             }
@@ -79,7 +79,7 @@ public class TransactionController
         newTransaction.Ticker = ticker;
         newTransaction.Shares = shares;
         newTransaction.TransactionType = type;
-        newTransaction.TransactionDate = DateTime.Now;
+        newTransaction.TransactionDate = DateTime.UtcNow;
         profileData.Transactions.Add(newTransaction);
         session.Save(newTransaction);
         session.Flush();

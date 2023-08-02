@@ -37,7 +37,7 @@ public class WatchListController
                 {
                     Id = watchListEntry.Id,
                     Ticker = watchListEntry.Ticker,
-                    DateAdded = watchListEntry.DateAdded,
+                    DateAdded = DateTime.UtcNow,
                     IsActive = watchListEntry.IsActive
                 };
 
@@ -57,7 +57,7 @@ public class WatchListController
                 {
                 Id = watchListEntry.Id,
                 Ticker = watchListEntry.Ticker,
-                DateAdded = watchListEntry.DateAdded,
+                DateAdded = DateTime.UtcNow,
                 IsActive = watchListEntry.IsActive
                 };
                 requestedWatchListEntries.Add(watch_List);
@@ -75,7 +75,7 @@ public class WatchListController
         watch_list newWatchListEntry = new watch_list();
         newWatchListEntry.ProfileId = profileData;
         newWatchListEntry.Ticker = ticker;
-        newWatchListEntry.DateAdded = DateTime.Now;
+        newWatchListEntry.DateAdded = DateTime.UtcNow;
         newWatchListEntry.IsActive = true;
         profileData.WatchLists.Add(newWatchListEntry);
         session.Save(newWatchListEntry);

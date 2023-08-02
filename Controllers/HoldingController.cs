@@ -75,7 +75,7 @@ public class HoldingController
         newHolding.ProfileId = profileData;
         newHolding.Ticker = ticker;
         newHolding.Shares = shares;
-        newHolding.LastTransactionDate = DateTime.Now;
+        newHolding.LastTransactionDate = DateTime.UtcNow;
         profileData.Holdings.Add(newHolding);
         session.Save(newHolding);
         session.Flush();

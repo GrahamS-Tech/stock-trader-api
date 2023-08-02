@@ -1,14 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ISession = NHibernate.ISession;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using StockTraderAPI.Adapters;
+using System.Security.Claims;
 using System.Text.Json;
+using ISession = NHibernate.ISession;
 
 namespace StockTraderAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 
-public class BankingDetailController
+public class BankingDetailController : ControllerBase
 {
     ISession session;
 
@@ -17,89 +19,117 @@ public class BankingDetailController
         this.session = session;
     }
 
-    //Get by profile id returns all banking entries for user, including id returns a single entry
-    [HttpGet("{profile_id}")]
-    public string Get(int profile_id, int id)
+    [HttpPost("AddAccount")]
+    [Authorize]
+    public IActionResult AddBankAccount([FromBody] banking_detail bankAccount)
     {
-        var profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == profile_id);
+        var response = new api_response<object> { };
+        var jsonResponse = "";
+        var currentUser = ValidateUser();
+
+        if (currentUser.Id is null)
+        {
+            response.Status = "error";
+            response.Message = "User account not found";
+            jsonResponse = JsonSerializer.Serialize(response);
+            return NotFound(jsonResponse);
+        }
+
+        profile profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == int.Parse(currentUser.Id));
+        banking_detail newBankingDetails = new banking_detail();
+        newBankingDetails.ProfileId = profileData;
+        newBankingDetails.AccountType = bankAccount.AccountType;
+        newBankingDetails.AccountNumber = bankAccount.AccountNumber;
+        newBankingDetails.RoutingNumber = bankAccount.RoutingNumber;
+        newBankingDetails.DateAdded = DateTime.UtcNow;
+        newBankingDetails.IsActive = true;
+        profileData.BankingDetails.Add(newBankingDetails);
+        session.Save(newBankingDetails);
+        session.Flush();
+
+        response.Status = "success";
+        response.Message = "Account successfully added";
+        jsonResponse = JsonSerializer.Serialize(response);
+        return Ok(jsonResponse);
+    }
+
+    [HttpGet("GetAllAccounts")]
+    [Authorize]
+    public IActionResult GetAllAccounts()
+    {
+        var response = new api_response<object> { };
+        var jsonResponse = "";
+        var currentUser = ValidateUser();
+
+        if (currentUser.Id is null)
+        {
+            response.Status = "error";
+            response.Message = "User account not found";
+            jsonResponse = JsonSerializer.Serialize(response);
+            return NotFound(jsonResponse);
+        }
+
+        var profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == int.Parse(currentUser.Id));
         
         IList<banking_detail> bankingDetails = new List<banking_detail>();
         bankingDetails = profileData.BankingDetails;
         List<banking_detail> requestedBankingDetail = new List<banking_detail>();
         var jsonBankingDetail = "";
 
-        if (id == 0)
-        {
-
             foreach (var bankingDetail in bankingDetails)
             {
-                banking_detail banking_Detail = new banking_detail()
-                {
-                    Id = bankingDetail.Id,
-                    AccountType = bankingDetail.AccountType,
-                    AccountNumber = bankingDetail.AccountNumber,
-                    RoutingNumber = bankingDetail.RoutingNumber,
-                    DateAdded = bankingDetail.DateAdded,
-                    IsActive = bankingDetail.IsActive
-                };
+                if (bankingDetail.IsActive == true)
+                {                
+                    banking_detail banking_Detail = new banking_detail()
+                    {
+                        Id = bankingDetail.Id,
+                        AccountType = bankingDetail.AccountType,
+                        AccountNumber = bankingDetail.AccountNumber,
+                        RoutingNumber = bankingDetail.RoutingNumber,
+                        DateAdded = bankingDetail.DateAdded,
+                        IsActive = bankingDetail.IsActive
+                    };
 
-                requestedBankingDetail.Add(banking_Detail);
+                    requestedBankingDetail.Add(banking_Detail);
+                }
             }
 
-            jsonBankingDetail = JsonSerializer.Serialize(requestedBankingDetail);
-            return jsonBankingDetail;
-        }
-
-        else
-        {
-            IEnumerable<banking_detail> selectedBankingDetail = bankingDetails.Where(i => i.Id == id);
-
-            foreach (var bankingDetail in selectedBankingDetail)
-            {
-                banking_detail banking_Detail = new banking_detail()
-                {
-                    Id = bankingDetail.Id,
-                    AccountType = bankingDetail.AccountType,
-                    AccountNumber = bankingDetail.AccountNumber,
-                    RoutingNumber = bankingDetail.RoutingNumber,
-                    DateAdded = bankingDetail.DateAdded,
-                    IsActive = bankingDetail.IsActive
-                };
-
-                requestedBankingDetail.Add(banking_Detail);
-            }
-
-            jsonBankingDetail = JsonSerializer.Serialize(requestedBankingDetail);
-            return jsonBankingDetail;
-        }
+        response.Status = "success";
+        response.Message = "All accounts retrieved successfully";
+        response.Data = requestedBankingDetail;
+        jsonResponse = JsonSerializer.Serialize(response);
+        return Ok(jsonResponse);
     }
 
-    [HttpPost("{profile_id}")]
-    public string Post(int profile_id, string enteredAccountType, string enteredAccountNumber, string enteredRoutingNumber)
+    [HttpPut("DeactivateAccount")]
+    [Authorize]
+    public IActionResult DeactivateAccount([FromBody] int accountId)
     {
-        profile profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == profile_id);
-        banking_detail newBankingDetails = new banking_detail();
-        newBankingDetails.ProfileId = profileData;
-        newBankingDetails.AccountType = enteredAccountType;
-        newBankingDetails.AccountNumber = enteredAccountNumber;
-        newBankingDetails.RoutingNumber = enteredRoutingNumber;
-        newBankingDetails.DateAdded = DateTime.Now;
-        newBankingDetails.IsActive = true;
-        profileData.BankingDetails.Add(newBankingDetails);
-        session.Save(newBankingDetails);
-        session.Flush();
+        var response = new api_response<object> { };
+        var jsonResponse = "";
+        var currentUser = ValidateUser();
 
-        return "Account successfully added";
-    }
+        if (currentUser.Id is null)
+        {
+            response.Status = "error";
+            response.Message = "User account not found";
+            jsonResponse = JsonSerializer.Serialize(response);
+            return NotFound(jsonResponse);
+        }
 
-    [HttpPut("{profile_id}, {id}")]
-    public string Put(int profile_id, int id)
-{
-        var profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == profile_id);
+        var profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == int.Parse(currentUser.Id));
 
         IList<banking_detail> bankingDetails = new List<banking_detail>();
         bankingDetails = profileData.BankingDetails;
-        IEnumerable<banking_detail> selectedBankingDetail = bankingDetails.Where(i => i.Id == id);
+        IEnumerable<banking_detail> selectedBankingDetail = bankingDetails.Where(i => i.Id == accountId);
+
+        if (selectedBankingDetail is null)
+        {
+            response.Status = "error";
+            response.Message = "Account not found";
+            jsonResponse = JsonSerializer.Serialize(response);
+            return NotFound(jsonResponse);
+        }
 
         var returnMessage = "";
 
@@ -108,11 +138,28 @@ public class BankingDetailController
             bankingDetail.IsActive = false;
             session.SaveOrUpdate(bankingDetail);
             session.Flush();
-
             returnMessage = "Account removed";
         }
 
-        return returnMessage;
-}
+        response.Status = "success";
+        response.Message = returnMessage;
+        jsonResponse = JsonSerializer.Serialize(response);
+        return Ok(jsonResponse);
+    }
+    private login ValidateUser()
+    {
+        var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+        if (identity is not null)
+        {
+            var userClaims = identity.Claims;
+
+            return new login
+            {
+                Id = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.NameIdentifier)?.Value
+            };
+        }
+        return null;
+    }
 
 }
