@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using StockTraderAPI.Adapters;
+using System.Security.Claims;
 using System.Text.Json;
 using ISession = NHibernate.ISession;
 namespace StockTraderAPI.Controllers;
@@ -7,7 +9,7 @@ namespace StockTraderAPI.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 
-public class TransactionController
+public class TransactionController : ControllerBase
 {
     ISession session;
 
@@ -16,74 +18,87 @@ public class TransactionController
         this.session = session;
     }
 
-    [HttpGet("{profile_id}")]
-    public string Get(int profile_id, int id)
+    [HttpPost("AddTransaction")]
+    [Authorize]
+    public IActionResult AddTransaction([FromBody] transaction newTransaction)
     {
+        var response = new api_response<object> { };
+        var jsonResponse = "";
+        var currentUser = ValidateUser();
 
-        var profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == profile_id);
+        if (currentUser.Id is null)
+        {
+            response.Status = "error";
+            response.Message = "User account not found";
+            jsonResponse = JsonSerializer.Serialize(response);
+            return NotFound(jsonResponse);
+        }
 
+        var userId = int.Parse(currentUser.Id);
+        var profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == userId);
         IList<transaction> transactions = new List<transaction>();
         transactions = profileData.Transactions;
         List<transaction> requestedTransactionEntries = new List<transaction>();
-        var jsonWatchlistEntries = "";
 
-        string returnMessage = "";
-
-        if (id == 0)
-        {
-            foreach (var transactionEntry in transactions)
-            {
-                transaction transaction = new transaction()
-                {
-                    Id = transactionEntry.Id,
-                    Ticker = transactionEntry.Ticker,
-                    Shares = transactionEntry.Shares,
-                    TransactionType = transactionEntry.TransactionType,
-                    TransactionDate = DateTime.UtcNow
-                };
-
-                requestedTransactionEntries.Add(transaction);
-            }
-
-            jsonWatchlistEntries = JsonSerializer.Serialize(requestedTransactionEntries);
-            return jsonWatchlistEntries;
-        }
-        else
-        {
-            IEnumerable<transaction> selectedTransactionEntry = session.Query<transaction>().Where(i => i.Id == id);
-
-            foreach (var transactionEntry in selectedTransactionEntry)
-            {
-                transaction transaction = new transaction()
-                {
-                    Id = transactionEntry.Id,
-                    Ticker = transactionEntry.Ticker,
-                    Shares = transactionEntry.Shares,
-                    TransactionType = transactionEntry.TransactionType,
-                    TransactionDate = DateTime.UtcNow
-                };
-                requestedTransactionEntries.Add(transaction);
-            }
-
-            jsonWatchlistEntries = JsonSerializer.Serialize(requestedTransactionEntries);
-            return jsonWatchlistEntries;
-        }
-    }
-
-    [HttpPost("{profile_id}")]
-    public string Post(int profile_id, string ticker, double shares, string type)
-    {
-        profile profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == profile_id);
-        transaction newTransaction = new transaction();
         newTransaction.ProfileId = profileData;
-        newTransaction.Ticker = ticker;
-        newTransaction.Shares = shares;
-        newTransaction.TransactionType = type;
         newTransaction.TransactionDate = DateTime.UtcNow;
         profileData.Transactions.Add(newTransaction);
         session.Save(newTransaction);
         session.Flush();
 
-        return "New transaction successfully added";
+        response.Status = "success";
+        response.Message = "Transaction successfully added";
+        jsonResponse = JsonSerializer.Serialize(response);
+        return Ok(jsonResponse);
+    }
+
+    [HttpGet("GetAllTransactions")]
+    [Authorize]
+    public IActionResult GetAllTransactions()
+    {
+        var response = new api_response<object> { };
+        var jsonResponse = "";
+        var currentUser = ValidateUser();
+
+        if (currentUser.Id is null)
+        {
+            response.Status = "error";
+            response.Message = "User account not found";
+            jsonResponse = JsonSerializer.Serialize(response);
+            return NotFound(jsonResponse);
+        }
+
+        var userId = int.Parse(currentUser.Id);
+        var profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == userId);
+        IList<transaction> transactions = new List<transaction>();
+        transactions = profileData.Transactions;
+
+        if (transactions is null) {
+            response.Status = "error";
+            response.Message = "No transactions found";
+            jsonResponse = JsonSerializer.Serialize(response);
+            return Ok(jsonResponse);
+        }
+
+        response.Status = "success";
+        response.Message = "Watch list entry successfully added";
+        response.Data = transactions;
+        jsonResponse = JsonSerializer.Serialize(response);
+        return Ok(jsonResponse);
+    }
+        private login ValidateUser()
+    {
+        var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+        if (identity is not null)
+        {
+            var userClaims = identity.Claims;
+
+            return new login
+            {
+                Id = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.NameIdentifier)?.Value
+            };
+        }
+        return null;
     }
 }

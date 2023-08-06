@@ -4,7 +4,6 @@ using StockTraderAPI.Adapters;
 using System.Security.Claims;
 using System.Text.Json;
 using ISession = NHibernate.ISession;
-
 namespace StockTraderAPI.Controllers;
 
 [Route("api/[controller]")]
@@ -36,7 +35,7 @@ public class ProfileController : ControllerBase
         }
 
         var userId = int.Parse(currentUser.Id);
-        var profileData = session.Query<profile>().Where(e => e.ProfileId == userId).FirstOrDefault();
+        var profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == userId);
         var currentProfile = new profile();
         currentProfile.ProfileId = profileData.ProfileId;
         currentProfile.FirstName = profileData.FirstName;
@@ -75,7 +74,7 @@ public class ProfileController : ControllerBase
         Console.WriteLine(userProfile);
         var profileUpdate = new profile();
         var userId = int.Parse(currentUser.Id);
-        profileUpdate = session.Query<profile>().Where(e => e.ProfileId == userId).FirstOrDefault();
+        var profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == userId);
         profileUpdate.FirstName = userProfile.FirstName;
         profileUpdate.LastName = userProfile.LastName;
         profileUpdate.EmailAddress = userProfile.EmailAddress;

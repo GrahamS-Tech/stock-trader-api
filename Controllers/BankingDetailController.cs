@@ -35,7 +35,9 @@ public class BankingDetailController : ControllerBase
             return NotFound(jsonResponse);
         }
 
-        profile profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == int.Parse(currentUser.Id));
+
+        var userId = int.Parse(currentUser.Id);
+        var profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == userId);
         banking_detail newBankingDetails = new banking_detail();
         newBankingDetails.ProfileId = profileData;
         newBankingDetails.AccountType = bankAccount.AccountType;
@@ -69,12 +71,12 @@ public class BankingDetailController : ControllerBase
             return NotFound(jsonResponse);
         }
 
-        var profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == int.Parse(currentUser.Id));
+        var userId = int.Parse(currentUser.Id);
+        var profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == userId);
         
         IList<banking_detail> bankingDetails = new List<banking_detail>();
         bankingDetails = profileData.BankingDetails;
         List<banking_detail> requestedBankingDetail = new List<banking_detail>();
-        var jsonBankingDetail = "";
 
             foreach (var bankingDetail in bankingDetails)
             {
@@ -117,8 +119,8 @@ public class BankingDetailController : ControllerBase
             return NotFound(jsonResponse);
         }
 
-        var profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == int.Parse(currentUser.Id));
-
+        var userId = int.Parse(currentUser.Id);
+        var profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == userId);
         IList<banking_detail> bankingDetails = new List<banking_detail>();
         bankingDetails = profileData.BankingDetails;
         IEnumerable<banking_detail> selectedBankingDetail = bankingDetails.Where(i => i.Id == accountId);
@@ -138,11 +140,10 @@ public class BankingDetailController : ControllerBase
             bankingDetail.IsActive = false;
             session.SaveOrUpdate(bankingDetail);
             session.Flush();
-            returnMessage = "Account removed";
         }
 
         response.Status = "success";
-        response.Message = returnMessage;
+        response.Message = "Account removed successfully";
         jsonResponse = JsonSerializer.Serialize(response);
         return Ok(jsonResponse);
     }
