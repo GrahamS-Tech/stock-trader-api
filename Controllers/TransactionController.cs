@@ -36,10 +36,6 @@ public class TransactionController : ControllerBase
 
         var userId = int.Parse(currentUser.Id);
         var profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == userId);
-        IList<transaction> transactions = new List<transaction>();
-        transactions = profileData.Transactions;
-        List<transaction> requestedTransactionEntries = new List<transaction>();
-
         newTransaction.ProfileId = profileData;
         newTransaction.TransactionDate = DateTime.UtcNow;
         profileData.Transactions.Add(newTransaction);
@@ -81,7 +77,7 @@ public class TransactionController : ControllerBase
         }
 
         response.Status = "success";
-        response.Message = "Watch list entry successfully added";
+        response.Message = "Transactions successfully retrieved";
         response.Data = transactions;
         jsonResponse = JsonSerializer.Serialize(response);
         return Ok(jsonResponse);

@@ -8,6 +8,7 @@
     <many-to-one name="ProfileId" class="profile" column="profile_id" not-null="true" cascade="all"/>
     <property name="Ticker" column="ticker"/>
     <property name="Shares" column="shares"/>
+	 <property name="MarketValue" column="market_value"/>  
     <property name="TransactionType" column="transaction_type"/>
     <property name="TransactionDate" column="transaction_date"/>
   </class>
