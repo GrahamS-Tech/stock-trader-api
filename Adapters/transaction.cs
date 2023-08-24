@@ -9,5 +9,6 @@
         public virtual double MarketValue { get; set; }
         public virtual string? TransactionType { get; set; }
         public virtual DateTime TransactionDate { get; set; }
+        public virtual string? ShareName { get; set; }
     }
 }

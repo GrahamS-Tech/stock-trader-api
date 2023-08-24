@@ -36,10 +36,16 @@ public class TransactionController : ControllerBase
 
         var userId = int.Parse(currentUser.Id);
         var profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == userId);
-        newTransaction.ProfileId = profileData;
-        newTransaction.TransactionDate = DateTime.UtcNow;
-        profileData.Transactions.Add(newTransaction);
-        session.Save(newTransaction);
+        transaction new_transaction = new transaction();
+        new_transaction.ProfileId = profileData;
+        new_transaction.Ticker = newTransaction.Ticker;
+        new_transaction.Shares = newTransaction.Shares;
+        new_transaction.MarketValue = newTransaction.MarketValue;
+        new_transaction.TransactionType = newTransaction.TransactionType;
+        new_transaction.ShareName = newTransaction.ShareName;
+        new_transaction.TransactionDate = DateTime.UtcNow;
+        profileData.Transactions.Add(new_transaction);
+        session.Save(new_transaction);
         session.Flush();
 
         response.Status = "success";

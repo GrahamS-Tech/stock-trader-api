@@ -11,5 +11,6 @@
 	 <property name="MarketValue" column="market_value"/>  
     <property name="TransactionType" column="transaction_type"/>
     <property name="TransactionDate" column="transaction_date"/>
+	<property name="ShareName" column ="name"/>
   </class>
 </hibernate-mapping>
