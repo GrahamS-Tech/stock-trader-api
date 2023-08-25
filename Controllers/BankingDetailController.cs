@@ -41,6 +41,7 @@ public class BankingDetailController : ControllerBase
         banking_detail newBankingDetails = new banking_detail();
         newBankingDetails.ProfileId = profileData;
         newBankingDetails.AccountType = bankAccount.AccountType;
+        newBankingDetails.AccountName = bankAccount.AccountName;
         newBankingDetails.AccountNumber = bankAccount.AccountNumber;
         newBankingDetails.RoutingNumber = bankAccount.RoutingNumber;
         newBankingDetails.DateAdded = DateTime.UtcNow;
@@ -86,6 +87,7 @@ public class BankingDetailController : ControllerBase
                     {
                         Id = bankingDetail.Id,
                         AccountType = bankingDetail.AccountType,
+                        AccountName = bankingDetail.AccountName,
                         AccountNumber = bankingDetail.AccountNumber,
                         RoutingNumber = bankingDetail.RoutingNumber,
                         DateAdded = bankingDetail.DateAdded,

@@ -9,6 +9,7 @@
     <property name="AccountType" column="account_type"/>
     <property name="AccountNumber" column="account_number"/>
     <property name="RoutingNumber" column="routing_number"/>
+	<property name="AccountName" column="account_name"/>
     <property name="DateAdded" column="date_added"/>
     <property name="IsActive" column="is_active"/>
   </class>

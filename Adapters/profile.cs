@@ -23,4 +23,6 @@ public class profile
     public virtual IList<transaction>? Transactions { get; set; }
     public virtual IList<watch_list>? WatchLists { get; set; }
     public virtual IList<login_log>? LoginLog { get; set; }
+    public virtual IList<fiat_holding>? FiatHoldings { get; set; }
+    public virtual IList<fiat_transaction>? FiatTransactions { get; set; }
 };

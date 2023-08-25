@@ -19,26 +19,34 @@
     <property name="ForcePasswordReset" column="force_password_reset"/>
     <property name="LastLoginTimestamp" column="last_login_timestamp"/>
     <property name="Salt" column="salt"/>
-	  <property name="ProfileComplete" column="profile_complete"/>
+	    <property name="ProfileComplete" column="profile_complete"/>
     <bag name="BankingDetails" cascade="all-delete-orphan" lazy="true">
-      <key column="profile_id"/>
-      <one-to-many class="banking_detail"/>
+        <key column="profile_id"/>
+        <one-to-many class="banking_detail"/>
     </bag>
+	<bag name="FiatHoldings" cascade="all-delete-orphan" lazy="true" inverse="true">
+	    <key column="profile_id"/>
+	    <one-to-many class="fiat_holding"/>
+	</bag>
+	    <bag name="FiatTransactions" cascade="all-delete-orphan" lazy="true" inverse="true">
+	    <key column="profile_id"/>
+	<one-to-many class="fiat_transaction"/>
+	</bag>
     <bag name="Holdings" cascade="all-delete-orphan" lazy="true" inverse="true">
-      <key column="profile_id"/>
-      <one-to-many class="holding"/>
+        <key column="profile_id"/>
+        <one-to-many class="holding"/>
     </bag>
     <bag name="Transactions" cascade="all-delete-orphan" lazy="true" inverse="true">
-      <key column="profile_id"/>
-      <one-to-many class="transaction"/>
+        <key column="profile_id"/>
+        <one-to-many class="transaction"/>
     </bag>
     <bag name="WatchLists" cascade="all-delete-orphan" lazy="true" inverse="true">
-      <key column="profile_id"/>
-      <one-to-many class="watch_list"/>
+        <key column="profile_id"/>
+        <one-to-many class="watch_list"/>
     </bag>
     <bag name="LoginLog" cascade="all-delete-orphan" lazy="true" inverse="true">
-      <key column="profile_id"/>
-      <one-to-many class="login_log"/>
+        <key column="profile_id"/>
+        <one-to-many class="login_log"/>
     </bag>
   </class>
 </hibernate-mapping>

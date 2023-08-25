@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="StockTraderAPI"
+                   namespace="StockTraderAPI.Adapters">
+	<class name="holding" table="fiat_transaction" lazy="true">
+		<id name="Id" column="id" unsaved-value="0" generator="identity">
+		</id>
+		<many-to-one name="ProfileId" class="profile" column="profile_id" not-null="true" cascade="all"/>
+		<property name="Currency" column="currency"/>
+		<property name="Value" column="value"/>
+		<property name="TransactionType" column="transaction_type"/>
+		<property name="TransactionDate" column="transaction_date"/>
+	</class>
+</hibernate-mapping>

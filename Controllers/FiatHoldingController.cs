@@ -9,18 +9,18 @@ namespace StockTraderAPI.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 
-public class HoldingController : ControllerBase
+public class FiatHoldingController : ControllerBase
 {
     ISession session;
 
-    public HoldingController(ISession session)
+    public FiatHoldingController(ISession session)
     {
         this.session = session;
     }
 
-    [HttpGet("GetAllHoldings")]
+    [HttpGet("GetAllFiatHoldings")]
     [Authorize]
-    public IActionResult GetAllHoldings()
+    public IActionResult GetAllFiatHoldings()
     {
         var response = new api_response<object> { };
         var jsonResponse = "";
@@ -37,30 +37,28 @@ public class HoldingController : ControllerBase
         var userId = int.Parse(currentUser.Id);
         var profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == userId);
 
-        IList<holding> holdings = new List<holding>();
-        holdings = profileData.Holdings;
-        List<holding> requestedHoldings = new List<holding>();
+        IList<fiat_holding> fiat_holdings = new List<fiat_holding>();
+        fiat_holdings = profileData.FiatHoldings;
+        List<fiat_holding> requestedFiatHoldings = new List<fiat_holding>();
 
-        foreach (var holding in holdings)
+        foreach (var fiat_holding in fiat_holdings)
         {
-            if (holding.Shares != 0)
+            if (fiat_holding.Balance != 0)
             {
-            holding _holding = new holding() 
-                { 
-                Id = holding.Id,
-                Ticker = holding.Ticker,
-                Name = holding.Name,
-                Shares = holding.Shares,
-                LastTransactionDate = holding.LastTransactionDate,
+                fiat_holding _fiat_holding = new fiat_holding()
+                {
+                    Id = fiat_holding.Id,
+                    Currency = fiat_holding.Currency,
+                    Balance = fiat_holding.Balance,
+                    LastTransactionDate = fiat_holding.LastTransactionDate,
                 };
-                requestedHoldings.Add(_holding);
+                requestedFiatHoldings.Add(_fiat_holding);
             }
         }
 
-        Console.Write(holdings);
         response.Status = "success";
-        response.Message = "All holdings successfully retrieved";
-        response.Data = requestedHoldings;
+        response.Message = "All fiat holdings successfully retrieved";
+        response.Data = requestedFiatHoldings;
         jsonResponse = JsonSerializer.Serialize(response);
         return Ok(jsonResponse);
     }
