@@ -41,6 +41,7 @@ public class FiatTransactionController : ControllerBase
         new_fiat_transaction.Currency = newFiatTransaction.Currency;
         new_fiat_transaction.Value = newFiatTransaction.Value;
         new_fiat_transaction.TransactionType = newFiatTransaction.TransactionType;
+        new_fiat_transaction.AccountNumber = newFiatTransaction.AccountNumber;
         new_fiat_transaction.TransactionDate = DateTime.UtcNow;
         profileData.FiatTransactions.Add(new_fiat_transaction);
         session.Save(new_fiat_transaction);

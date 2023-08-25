@@ -2,13 +2,12 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
                    assembly="StockTraderAPI"
                    namespace="StockTraderAPI.Adapters">
-	<class name="holding" table="fiat_holding" lazy="true">
+	<class name="fiat_holding" table="public.fiat_holding" lazy="true">
 		<id name="Id" column="id" unsaved-value="0" generator="identity">
 		</id>
 		<many-to-one name="ProfileId" class="profile" column="profile_id" not-null="true" cascade="all"/>
 		<property name="Currency" column="currency"/>
-		<property name="Balance" column="Balance"/>
-		<property name="Shares" column="shares"/>
+		<property name="Balance" column="balance"/>
 		<property name="LastTransactionDate" column="last_transaction_date"/>
 	</class>
 </hibernate-mapping>

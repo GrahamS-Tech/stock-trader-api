@@ -10,7 +10,10 @@
 
   <ItemGroup>
     <None Remove="Adapters\Mappings\banking_detail.hbm.xml" />
+    <None Remove="Adapters\Mappings\fiat_holding.hbm.xml" />
+    <None Remove="Adapters\Mappings\fiat_transaction.hbm.xml" />
     <None Remove="Adapters\Mappings\holding.hbm.xml" />
+    <None Remove="Adapters\Mappings\login_log.hbm.xml" />
     <None Remove="Adapters\Mappings\profile.hbm.xml" />
     <None Remove="Adapters\Mappings\transaction.hbm.xml" />
     <None Remove="Adapters\Mappings\watch_list.hbm.xml" />
@@ -19,19 +22,24 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Adapters\Mappings\banking_detail.hbm.xml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Adapters\Mappings\fiat_holding.hbm.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Adapters\Mappings\fiat_transaction.hbm.xml" />
     <EmbeddedResource Include="Adapters\Mappings\holding.hbm.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Adapters\Mappings\login_log.hbm.xml" />
     <EmbeddedResource Include="Adapters\Mappings\profile.hbm.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Adapters\Mappings\transaction.hbm.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Adapters\Mappings\watch_list.hbm.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
 

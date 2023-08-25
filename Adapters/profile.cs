@@ -19,10 +19,10 @@ public class profile
     public virtual bool ProfileComplete { get; set; }
     public virtual DateTime LastLoginTimestamp { get; set; }
     public virtual IList<banking_detail>? BankingDetails { get; set; }
+    public virtual IList<fiat_holding>? FiatHoldings { get; set; }
+    public virtual IList<fiat_transaction>? FiatTransactions { get; set; }
     public virtual IList<holding>? Holdings { get; set; }
     public virtual IList<transaction>? Transactions { get; set; }
     public virtual IList<watch_list>? WatchLists { get; set; }
     public virtual IList<login_log>? LoginLog { get; set; }
-    public virtual IList<fiat_holding>? FiatHoldings { get; set; }
-    public virtual IList<fiat_transaction>? FiatTransactions { get; set; }
 };

@@ -122,16 +122,13 @@ public class WatchListController : ControllerBase
         IEnumerable<watch_list> selectedWatchlistDetails = watchlistDetails.Where(i => i.Id == watchListId);
 
         if (selectedWatchlistDetails is null) {
-
             response.Status = "error";
             response.Message = "Watch list item not found";
             jsonResponse = JsonSerializer.Serialize(response);
             return NotFound(jsonResponse);
-
         }
 
-        foreach (var watchlistDetail in selectedWatchlistDetails)
-        {
+        foreach (var watchlistDetail in selectedWatchlistDetails) {
             watchlistDetail.IsActive = false;
             session.SaveOrUpdate(watchlistDetail);
             session.Flush();

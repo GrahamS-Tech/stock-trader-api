@@ -63,6 +63,46 @@ public class FiatHoldingController : ControllerBase
         return Ok(jsonResponse);
     }
 
+    [HttpGet("{currency}")]
+    [Authorize]
+    public IActionResult GetFiatBalanceByCurrency(string currency)
+    {
+        var response = new api_response<object> { };
+        var jsonResponse = "";
+        var currentUser = ValidateUser();
+
+        if (currentUser.Id is null)
+        {
+            response.Status = "error";
+            response.Message = "User account not found";
+            jsonResponse = JsonSerializer.Serialize(response);
+            return NotFound(jsonResponse);
+        }
+
+        var userId = int.Parse(currentUser.Id);
+        var profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == userId);
+        IList<fiat_holding> fiat_holdings = new List<fiat_holding>();
+        fiat_holdings = profileData.FiatHoldings;
+        IEnumerable<fiat_holding> selectedCurrency = fiat_holdings.Where(i => i.Currency == currency);
+
+        if (selectedCurrency is null) {
+            response.Status = "error";
+            response.Message = "Watch list item not found";
+            jsonResponse = JsonSerializer.Serialize(response);
+            return NotFound(jsonResponse);
+        }
+
+        foreach (var entry in selectedCurrency)
+        {
+            response.Data = entry.Balance;
+        }
+
+        response.Status = "success";
+        response.Message = "Fiat balance successfully retrieved";
+        jsonResponse = JsonSerializer.Serialize(response);
+        return Ok(jsonResponse);
+    }
+
     private login ValidateUser()
     {
         var identity = HttpContext.User.Identity as ClaimsIdentity;
