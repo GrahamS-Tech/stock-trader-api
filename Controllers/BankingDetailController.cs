@@ -135,8 +135,6 @@ public class BankingDetailController : ControllerBase
             return NotFound(jsonResponse);
         }
 
-        var returnMessage = "";
-
         foreach (var bankingDetail in selectedBankingDetail)
         {
             bankingDetail.IsActive = false;
