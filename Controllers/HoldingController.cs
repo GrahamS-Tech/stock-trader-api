@@ -18,9 +18,9 @@ public class HoldingController : ControllerBase
         this.session = session;
     }
 
-    [HttpGet("GetAllHoldings")]
+    [HttpGet("{GetAllHoldings}")]
     [Authorize]
-    public IActionResult GetAllHoldings()
+    public IActionResult GetAllHoldings(bool excludeZero)
     {
         var response = new api_response<object> { };
         var jsonResponse = "";
@@ -38,13 +38,17 @@ public class HoldingController : ControllerBase
         var profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == userId);
 
         IList<holding> holdings = new List<holding>();
-        holdings = profileData.Holdings;
+        if (!excludeZero)
+        {
+            holdings = profileData.Holdings;
+        }
+        else {
+            holdings = profileData.Holdings.Where(h => h.Shares != 0).ToList();
+        }
         List<holding> requestedHoldings = new List<holding>();
 
         foreach (var holding in holdings)
         {
-            if (holding.Shares != 0)
-            {
             holding _holding = new holding() 
                 { 
                 Id = holding.Id,
@@ -54,7 +58,6 @@ public class HoldingController : ControllerBase
                 LastTransactionDate = holding.LastTransactionDate,
                 };
                 requestedHoldings.Add(_holding);
-            }
         }
 
         Console.Write(holdings);
