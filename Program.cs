@@ -34,6 +34,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ClockSkew = TimeSpan.FromSeconds(5)
     };
 });
+
 var connString = builder.Configuration["ConnectionStrings:azurePostgres"];
 builder.Services.AddSingleton<ISessionFactory>((provider) => { 
 var cfg = new NHibernate.Cfg.Configuration();
