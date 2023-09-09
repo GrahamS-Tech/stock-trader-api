@@ -38,7 +38,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 var connString = builder.Configuration["ConnectionStrings:azurePostgres"];
 builder.Services.AddSingleton<ISessionFactory>((provider) => { 
 var cfg = new NHibernate.Cfg.Configuration();
-    cfg.Configure();
+    cfg.Configure(".\\Adapters\\Mappings\\hibernate.cfg.xml");
     cfg.SetProperty(NHibernate.Cfg.Environment.ConnectionString, connString);
     cfg.CurrentSessionContext<WebSessionContext>();
     return cfg.BuildSessionFactory();

@@ -16,6 +16,7 @@
     <None Remove="Adapters\Mappings\banking_detail.hbm.xml" />
     <None Remove="Adapters\Mappings\fiat_holding.hbm.xml" />
     <None Remove="Adapters\Mappings\fiat_transaction.hbm.xml" />
+    <None Remove="Adapters\Mappings\hibernate.cfg.xml" />
     <None Remove="Adapters\Mappings\holding.hbm.xml" />
     <None Remove="Adapters\Mappings\login_log.hbm.xml" />
     <None Remove="Adapters\Mappings\profile.hbm.xml" />
@@ -32,6 +33,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Adapters\Mappings\fiat_transaction.hbm.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Adapters\Mappings\hibernate.cfg.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Adapters\Mappings\holding.hbm.xml">
