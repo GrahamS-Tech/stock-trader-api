@@ -40,7 +40,7 @@ Console.WriteLine(connString);
 builder.Services.AddSingleton<ISessionFactory>((provider) => { 
 var cfg = new NHibernate.Cfg.Configuration();
     cfg.Configure(".\\Adapters\\Mappings\\hibernate.cfg.xml");
-    cfg.SetProperty(NHibernate.Cfg.Environment.ConnectionString, connString);
+    cfg.SetProperty("connection.connection_string", connString);
     cfg.CurrentSessionContext<WebSessionContext>();
     return cfg.BuildSessionFactory();
 });
