@@ -5,6 +5,7 @@ using NHibernate.Context;
 using StockTraderAPI.Controllers;
 using System.Text;
 using ISession = NHibernate.ISession;
+using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +38,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 var connString = builder.Configuration.GetConnectionString("azurePostgres");
 //System.Diagnostics.Debug.WriteLine(connString);
+EventLog eventlog = new EventLog();
+eventlog.Source = "ConnectionStringLog";
+eventlog.WriteEntry(connString, EventLogEntryType.Information);
 builder.Services.AddSingleton<ISessionFactory>((provider) => { 
 var cfg = new NHibernate.Cfg.Configuration();
     cfg.Configure(".\\Adapters\\Mappings\\hibernate.cfg.xml");
