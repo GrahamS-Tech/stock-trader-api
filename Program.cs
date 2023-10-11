@@ -35,12 +35,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     };
 });
 
-//var connString = builder.Configuration.GetConnectionString("azurePostgres");
+var connString = builder.Configuration.GetConnectionString("azurePostgres");
 //System.Diagnostics.Debug.WriteLine(connString);
 builder.Services.AddSingleton<ISessionFactory>((provider) => { 
 var cfg = new NHibernate.Cfg.Configuration();
     cfg.Configure(".\\Adapters\\Mappings\\hibernate.cfg.xml");
-    //cfg.SetProperty("connection.connection_string", connString);
+    cfg.SetProperty("connection.connection_string", connString);
     cfg.CurrentSessionContext<WebSessionContext>();
     return cfg.BuildSessionFactory();
 });
