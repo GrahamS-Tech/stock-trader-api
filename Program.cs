@@ -41,7 +41,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 builder.Services.AddSingleton<ISessionFactory>((provider) => { 
 var cfg = new NHibernate.Cfg.Configuration();
     cfg.Configure(".\\Adapters\\Mappings\\hibernate.cfg.xml");
-    //cfg.SetProperty("connection.connection_string", connString);
+    cfg.SetProperty("connection.connection_string", "Server=pohst-st.postgres.database.azure.com;Database=postgres;Port=5432;User Id=kendric;Password=FftyY9kg_hJ9u9z;Ssl Mode=VerifyFull");
     cfg.CurrentSessionContext<WebSessionContext>();
     return cfg.BuildSessionFactory();
 });
