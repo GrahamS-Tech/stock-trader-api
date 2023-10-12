@@ -48,7 +48,7 @@ if (String.IsNullOrEmpty(Environment.GetEnvironmentVariable("IDENTITY_ENDPOINT")
 }
 else
 {
-    userId = "User Id=azure_stock_trader_api";
+    userId = "User Id=stock-trader-api";
     var credential = new DefaultAzureCredential();
     var token = credential.GetToken(new Azure.Core.TokenRequestContext(new[] { "https://ossrdbms-aad.database.windows.net/.default" }));
     password = "Password=" + token.Token;
