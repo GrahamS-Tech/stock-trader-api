@@ -5,7 +5,6 @@ using NHibernate.Context;
 using StockTraderAPI.Controllers;
 using System.Text;
 using ISession = NHibernate.ISession;
-using Azure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,21 +36,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 });
 
 var connString = builder.Configuration.GetConnectionString("azurePostgres");
-var userId = "";
-var password = "";
-if (String.IsNullOrEmpty(Environment.GetEnvironmentVariable("IDENTITY_ENDPOINT")))
-{
-    userId = builder.Configuration["azurePostgres:UserId"];
-    password = builder.Configuration["azurePostgres:Password"];
-}
-else
-{
-    userId = "User Id=azure_stock_trader_api@pohst-st.postgres.database.azure.com";
-    var credential = new DefaultAzureCredential();
-    var token = credential.GetToken(new Azure.Core.TokenRequestContext(new[] { "https://ossrdbms-aad.database.windows.net/.default" }));
-    password = "Password=" + token.Token;
-}
-    
+var userId = builder.Configuration["azurePostgres:UserId"];
+var password = builder.Configuration["azurePostgres:Password"];    
 builder.Services.AddSingleton<ISessionFactory>((provider) => { 
 var cfg = new NHibernate.Cfg.Configuration();
     cfg.Configure(".\\Adapters\\Mappings\\hibernate.cfg.xml");
