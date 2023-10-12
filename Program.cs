@@ -5,8 +5,6 @@ using NHibernate.Context;
 using StockTraderAPI.Controllers;
 using System.Text;
 using ISession = NHibernate.ISession;
-using System.Diagnostics;
-using NHibernate.Hql.Ast;
 using Azure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,7 +46,7 @@ if (String.IsNullOrEmpty(Environment.GetEnvironmentVariable("IDENTITY_ENDPOINT")
 }
 else
 {
-    userId = "User Id=stock-trader-api";
+    userId = "User Id=azure_stock_trader_api@pohst-st.postgres.database.azure.com";
     var credential = new DefaultAzureCredential();
     var token = credential.GetToken(new Azure.Core.TokenRequestContext(new[] { "https://ossrdbms-aad.database.windows.net/.default" }));
     password = "Password=" + token.Token;
