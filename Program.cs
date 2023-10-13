@@ -16,6 +16,7 @@ builder.Services.AddCors(o => {
     });
 });
 builder.Services.AddControllers();
+builder.Services.AddHttpClient();
 builder.Services.AddMvc();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
