@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StockTraderAPI.Adapters;
+using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Options;
 
 namespace StockTraderAPI.Controllers;
 
@@ -12,17 +14,21 @@ namespace StockTraderAPI.Controllers;
 
 public class StockDataController : ControllerBase
 {
+    private readonly IConfiguration _configuration;
+
     private readonly IHttpClientFactory _clientFactory;
 
-    public StockDataController(IHttpClientFactory clientFactory)
+    public StockDataController(IHttpClientFactory clientFactory, IConfiguration configuration)
     {
         _clientFactory = clientFactory;
+        _configuration = configuration;
     }
 
     [HttpGet("CurrentPrice")]
     [Authorize]
-    public async Task<IActionResult> GetCurrentPrice([FromBody] string ticker)
+    public async Task<IActionResult> GetCurrentPrice(string ticker)
     {
+        var apiKey = _configuration["AlphaVantageAPIKey"];
         var response = new api_response<object> { };
         var jsonResponse = "";
         var currentUser = ValidateUser();
@@ -69,6 +75,7 @@ public class StockDataController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetPriceHistory(string ticker)
     {
+        var apiKey = Environment.GetEnvironmentVariable("AlphaVantageAPIKey");
         var response = new api_response<object> { };
         var jsonResponse = "";
         var currentUser = ValidateUser();
