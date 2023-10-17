@@ -24,7 +24,7 @@ public class StockDataController : ControllerBase
         _configuration = configuration;
     }
 
-    [HttpGet("CurrentPrice")]
+    [HttpGet("CurrentPrice/{ticker}")]
     [Authorize]
     public async Task<IActionResult> GetCurrentPrice(string ticker)
     {
@@ -71,7 +71,7 @@ public class StockDataController : ControllerBase
         
     }
 
-    [HttpGet("PriceHistory")]
+    [HttpGet("PriceHistory/{ticker}")]
     [Authorize]
     public async Task<IActionResult> GetPriceHistory(string ticker)
     {
