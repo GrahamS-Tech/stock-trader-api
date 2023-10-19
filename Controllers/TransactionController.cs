@@ -88,7 +88,52 @@ public class TransactionController : ControllerBase
         jsonResponse = JsonSerializer.Serialize(response);
         return Ok(jsonResponse);
     }
-        private login ValidateUser()
+
+    [HttpGet("GetTransactionsByDate/{startDateTime}, {endDateTime}")]
+    [Authorize]
+    public IActionResult GetAllTransactions(DateTime startDateTime, DateTime endDateTime)
+    {
+        var response = new api_response<object> { };
+        var jsonResponse = "";
+        var currentUser = ValidateUser();
+
+        if (currentUser.Id is null)
+        {
+            response.Status = "error";
+            response.Message = "User account not found";
+            jsonResponse = JsonSerializer.Serialize(response);
+            return NotFound(jsonResponse);
+        }
+
+        var userId = int.Parse(currentUser.Id);
+        var profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == userId);
+        IList<transaction> transactions = new List<transaction>();
+        transactions = profileData.Transactions.Where(i => i.TransactionDate >= startDateTime && i.TransactionDate <= endDateTime).ToList();
+        List<transaction> selectedTransactions = new List<transaction>();
+
+        foreach (var transaction in transactions)
+        {
+            transaction _transaction = new transaction()
+            {
+                Id = transaction.Id,
+                Ticker = transaction.Ticker,
+                Shares = transaction.Shares,
+                MarketValue = transaction.MarketValue,
+                TransactionType = transaction.TransactionType,
+                TransactionDate = transaction.TransactionDate,
+                ShareName = transaction.ShareName
+            };
+            selectedTransactions.Add(_transaction);
+
+        }
+
+        response.Status = "success";
+        response.Message = "Transactions successfully retrieved";
+        response.Data = selectedTransactions;
+        jsonResponse = JsonSerializer.Serialize(response);
+        return Ok(jsonResponse);
+    }
+    private login ValidateUser()
     {
         var identity = HttpContext.User.Identity as ClaimsIdentity;
 
