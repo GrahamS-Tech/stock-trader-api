@@ -91,7 +91,7 @@ public class TransactionController : ControllerBase
 
     [HttpGet("GetTransactionsByDate/{startDateTime}, {endDateTime}")]
     [Authorize]
-    public IActionResult GetAllTransactions(DateTime startDateTime, DateTime endDateTime)
+    public IActionResult GetTransactionsByDate(DateTime startDateTime, DateTime endDateTime)
     {
         var response = new api_response<object> { };
         var jsonResponse = "";
@@ -124,7 +124,6 @@ public class TransactionController : ControllerBase
                 ShareName = transaction.ShareName
             };
             selectedTransactions.Add(_transaction);
-
         }
 
         response.Status = "success";
