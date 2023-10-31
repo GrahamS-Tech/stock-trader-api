@@ -36,20 +36,29 @@ public class TransactionController : ControllerBase
 
         var userId = int.Parse(currentUser.Id);
         var profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == userId);
-        transaction new_transaction = new transaction();
-        new_transaction.ProfileId = profileData;
-        new_transaction.Ticker = newTransaction.Ticker;
-        new_transaction.Shares = newTransaction.Shares;
-        new_transaction.MarketValue = newTransaction.MarketValue;
-        new_transaction.TransactionType = newTransaction.TransactionType;
-        new_transaction.ShareName = newTransaction.ShareName;
-        new_transaction.TransactionDate = DateTime.UtcNow;
-        profileData.Transactions.Add(new_transaction);
-        session.Save(new_transaction);
-        session.Flush();
+        var holdingDetails = profileData.Holdings.FirstOrDefault(h => h.Ticker == newTransaction.Ticker);
+        if (newTransaction.Shares + holdingDetails.Shares < 0)
+        {
+            response.Status = "Error";
+            response.Message = "Insufficient balance";
+        }
+        else
+        {
+            transaction new_transaction = new transaction();
+            new_transaction.ProfileId = profileData;
+            new_transaction.Ticker = newTransaction.Ticker;
+            new_transaction.Shares = newTransaction.Shares;
+            new_transaction.MarketValue = newTransaction.MarketValue;
+            new_transaction.TransactionType = newTransaction.TransactionType;
+            new_transaction.ShareName = newTransaction.ShareName;
+            new_transaction.TransactionDate = DateTime.UtcNow;
+            profileData.Transactions.Add(new_transaction);
+            session.Save(new_transaction);
+            session.Flush();
 
-        response.Status = "success";
-        response.Message = "Transaction successfully added";
+            response.Status = "success";
+            response.Message = "Transaction successfully added";
+        }
         jsonResponse = JsonSerializer.Serialize(response);
         return Ok(jsonResponse);
     }

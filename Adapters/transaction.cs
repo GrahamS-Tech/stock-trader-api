@@ -1,5 +1,4 @@
-﻿namespace StockTraderAPI.Adapters
-{
+﻿namespace StockTraderAPI.Adapters;
     public class transaction
     {
         public virtual int Id { get; set; }
@@ -11,4 +10,3 @@
         public virtual DateTime TransactionDate { get; set; }
         public virtual string? ShareName { get; set; }
     }
-}
