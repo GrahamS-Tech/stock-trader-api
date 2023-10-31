@@ -37,13 +37,16 @@ public class TransactionController : ControllerBase
         var userId = int.Parse(currentUser.Id);
         var profileData = session.Query<profile>().FirstOrDefault(p => p.ProfileId == userId);
         var holdingDetails = profileData.Holdings.FirstOrDefault(h => h.Ticker == newTransaction.Ticker);
-        if (newTransaction.Shares + holdingDetails.Shares < 0)
+        var fiatDetails = profileData.FiatHoldings.FirstOrDefault(h => h.Currency == "USD");
+        if (newTransaction.TransactionType == "Sell" && newTransaction.Shares + holdingDetails.Shares < 0)
         {
             response.Status = "Error";
-            response.Message = "Insufficient balance";
+            response.Message = $"You only have {holdingDetails.Shares} share(s) available to sell";
+        } else if (newTransaction.TransactionType == "Buy" && newTransaction.MarketValue * newTransaction.Shares < fiatDetails.Balance) {
+            response.Status = "Error";
+            response.Message = "Insufficient funds to complete this purchase. Add funds from the My Account page.";
         }
-        else
-        {
+        else {
             transaction new_transaction = new transaction();
             new_transaction.ProfileId = profileData;
             new_transaction.Ticker = newTransaction.Ticker;
