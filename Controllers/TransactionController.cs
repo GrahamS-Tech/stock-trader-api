@@ -44,7 +44,7 @@ public class TransactionController : ControllerBase
             response.Message = $"You only have {holdingDetails.Shares} share(s) available to sell";
         } else if (newTransaction.TransactionType == "Buy" && newTransaction.MarketValue * newTransaction.Shares < fiatDetails.Balance) {
             response.Status = "Error";
-            response.Message = "Insufficient funds to complete this purchase. Add funds from the My Account page. " + fiatDetails.Balance.ToString();
+            response.Message = "Insufficient funds to complete this purchase. Add funds from the My Account page. Fiat balance: " + fiatDetails.Balance.ToString() + "Market value: " + newTransaction.MarketValue.ToString() + "Shares: " + newTransaction.Shares.ToString();
         }
         else {
             transaction new_transaction = new transaction();
