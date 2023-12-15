@@ -33,8 +33,7 @@ public class StockDataController : ControllerBase
         var jsonResponse = "";
         var currentUser = ValidateUser();
 
-        if (currentUser.Id is null)
-        {
+        if (currentUser.Id is null) {
             response.Status = "error";
             response.Message = "User account not found";
             jsonResponse = JsonConvert.SerializeObject(response);
@@ -57,31 +56,27 @@ public class StockDataController : ControllerBase
             response.Status = "Error";
             response.Message = "Could not retrieve stock data";
             Console.WriteLine(err.Message);
-
         }
 
         jsonResponse = JsonConvert.SerializeObject(response);
-        if (response.Status == "success")
-        {
+        if (response.Status == "success") {
             return Ok(jsonResponse);
         }
         else {
             return BadRequest(jsonResponse);
         }
-
     }
 
-    [HttpGet("DailyPriceHistory/{ticker}")]
+    [HttpGet("IntradayPriceHistory/{ticker}")]
     [Authorize]
-    public async Task<IActionResult> GetPriceHistory(string ticker)
+    public async Task<IActionResult> GetIntradayPriceHistory(string ticker)
     {
         var apiKey = Environment.GetEnvironmentVariable("AlphaVantageAPIKey");
         var response = new api_response<object> { };
         var jsonResponse = "";
         var currentUser = ValidateUser();
 
-        if (currentUser.Id is null)
-        {
+        if (currentUser.Id is null) {
             response.Status = "error";
             response.Message = "User account not found";
             jsonResponse = JsonConvert.SerializeObject(response);
@@ -91,8 +86,7 @@ public class StockDataController : ControllerBase
         var url = $"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={ticker}&interval=15min&entitlement=delayed&apikey={apiKey}";
         var request = new HttpRequestMessage(HttpMethod.Get, url);
 
-        try
-        {
+        try {
             var client = _clientFactory.CreateClient("stockData");
             var data = await client.SendAsync(request);
             dynamic responseBody = await data.Content.ReadAsStringAsync();
@@ -101,24 +95,61 @@ public class StockDataController : ControllerBase
             response.Status = "success";
             response.Message = "Stock data retrieved successfully";
         }
-        catch (Exception err)
-        {
+        catch (Exception err) {
             response.Status = "Error";
             response.Message = "Could not retrieve stock data";
             Console.WriteLine(err.Message);
-
         }
 
         jsonResponse = JsonConvert.SerializeObject(response);
-        if (response.Status == "success")
-        {
+        if (response.Status == "success") {
             return Ok(jsonResponse);
         }
-        else
-        {
+        else {
             return BadRequest(jsonResponse);
         }
+    }
 
+    [HttpGet("DailyPriceHistory/{ticker}")]
+    [Authorize]
+    public async Task<IActionResult> GetDailyPriceHistory(string ticker)
+    {
+        var apiKey = Environment.GetEnvironmentVariable("AlphaVantageAPIKey");
+        var response = new api_response<object> { };
+        var jsonResponse = "";
+        var currentUser = ValidateUser();
+
+        if (currentUser.Id is null) {
+            response.Status = "error";
+            response.Message = "User account not found";
+            jsonResponse = JsonConvert.SerializeObject(response);
+            return NotFound(jsonResponse);
+        }
+
+        var url = $"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={ticker}&interval=15min&entitlement=delayed&apikey={apiKey}";
+        var request = new HttpRequestMessage(HttpMethod.Get, url);
+
+        try {
+            var client = _clientFactory.CreateClient("stockData");
+            var data = await client.SendAsync(request);
+            dynamic responseBody = await data.Content.ReadAsStringAsync();
+            JObject result = JsonConvert.DeserializeObject<JObject>(responseBody);
+            response.Data = result;
+            response.Status = "success";
+            response.Message = "Stock data retrieved successfully";
+        }
+        catch (Exception err) {
+            response.Status = "Error";
+            response.Message = "Could not retrieve stock data";
+        }
+
+        jsonResponse = JsonConvert.SerializeObject(response);
+        if (response.Status == "success") {
+            return Ok(jsonResponse);
+        }
+        else {
+            return BadRequest(jsonResponse);
+        }
     }
 
     [HttpGet("MonthlyPriceHistory/{ticker}")]
@@ -130,8 +161,7 @@ public class StockDataController : ControllerBase
         var jsonResponse = "";
         var currentUser = ValidateUser();
 
-        if (currentUser.Id is null)
-        {
+        if (currentUser.Id is null) {
             response.Status = "error";
             response.Message = "User account not found";
             jsonResponse = JsonConvert.SerializeObject(response);
@@ -141,8 +171,7 @@ public class StockDataController : ControllerBase
         var url = $"https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol={ticker}&apikey={apiKey}";
         var request = new HttpRequestMessage(HttpMethod.Get, url);
 
-        try
-        {
+        try {
             var client = _clientFactory.CreateClient("stockData");
             var data = await client.SendAsync(request);
             dynamic responseBody = await data.Content.ReadAsStringAsync();
@@ -151,24 +180,18 @@ public class StockDataController : ControllerBase
             response.Status = "success";
             response.Message = "Stock data retrieved successfully";
         }
-        catch (Exception err)
-        {
+        catch (Exception err) {
             response.Status = "Error";
             response.Message = "Could not retrieve stock data";
-            Console.WriteLine(err.Message);
-
         }
 
         jsonResponse = JsonConvert.SerializeObject(response);
-        if (response.Status == "success")
-        {
+        if (response.Status == "success") {
             return Ok(jsonResponse);
         }
-        else
-        {
+        else {
             return BadRequest(jsonResponse);
         }
-
     }
 
     private login ValidateUser()
