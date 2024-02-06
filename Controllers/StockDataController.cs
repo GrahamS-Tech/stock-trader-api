@@ -234,7 +234,7 @@ public class StockDataController : ControllerBase
         }
     }
 
-    [HttpGet("News")]
+    [HttpGet("MarketNews")]
     [Authorize]
     public async Task<IActionResult> GetNews()
     {
@@ -276,7 +276,7 @@ public class StockDataController : ControllerBase
         }
     }
 
-    [HttpGet("News/{ticker}")]
+    [HttpGet("NewsByTicker/{ticker}")]
     [Authorize]
     public async Task<IActionResult> GetNewsByTicker(string ticker)
     {
@@ -318,7 +318,7 @@ public class StockDataController : ControllerBase
         }
     }
 
-    [HttpGet("News/{topic}")]
+    [HttpGet("NewsByTopic/{topic}")]
     [Authorize]
     public async Task<IActionResult> GetNewsByTopic(string topic)
     {
