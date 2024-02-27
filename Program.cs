@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(o => {
     o.AddPolicy(name: "_allowedOrigins", policy => {
-        policy.WithOrigins("https://localhost:44450")
+        policy.WithOrigins("https://localhost:44450", "https://fantasy-trade.azurewebsites.net/")
         .AllowAnyHeader()
         .AllowAnyMethod();
     });
@@ -38,8 +38,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 var connString = builder.Configuration.GetConnectionString("azurePostgres");
 var userId = builder.Configuration["azurePostgres:UserId"];
-var password = builder.Configuration["azurePostgres:Password"];    
-builder.Services.AddSingleton<ISessionFactory>((provider) => { 
+var password = builder.Configuration["azurePostgres:Password"];
+builder.Services.AddSingleton<ISessionFactory>((provider) => {
 var cfg = new NHibernate.Cfg.Configuration();
     cfg.Configure(".\\Adapters\\Mappings\\hibernate.cfg.xml");
     cfg.SetProperty("connection.connection_string", connString +";" + userId + ";" + password);
