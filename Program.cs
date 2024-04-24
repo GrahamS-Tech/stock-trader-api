@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(o => {
     o.AddPolicy(name: "_allowedOrigins", policy => {
-        policy.WithOrigins("https://localhost:44450", "https://fantasy-trade.azurewebsites.net/")
+        policy.WithOrigins("https://localhost:44450", "https://fantasy-trade.azurewebsites.net")
         .AllowAnyHeader()
         .AllowAnyMethod();
     });
